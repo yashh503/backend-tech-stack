@@ -4,6 +4,7 @@ This is a boilerplate project structure for a backend application built using **
 
 ## Features
 - RESTful API structure.
+- mongoose connection
 - JWT-based authentication.
 - Environment variable management.
 - Modular route handling.
