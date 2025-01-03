@@ -3,15 +3,16 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const connectDatabase = require("./database/db");
-const routes = require('./routes/index')
-const errorMiddleware = require('./utils/globalErrorHandler');
+const routes = require("./routes/index");
+const errorMiddleware = require("./utils/globalErrorHandler");
 const asyncErrorHandler = require("./utils/asyncErrorHandler");
+require("dotenv").config();
 // const numCPUs = require('node:os').availableParallelism();
 
 // console.log(numCPUs)
 
 // Create an Express application
-const app = express();  
+const app = express();
 
 // Define the port number, using the environment variable PORT if available, otherwise default to 3001
 const port = process.env.PORT || 3001;
@@ -20,37 +21,30 @@ const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-  cors({
-    // Allow requests from specified origin(s)
-    origin: [process.env.FRONTEND_URL, 'http://localhost:3032'],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
-    exposedHeaders: ["set-cookie"],
-  })
-);
+app.use(cors());
 
 // database connection
 connectDatabase();
 
-
 // Start the server and listen for incoming requests on the specified port
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`Server is running on port ${port}`);
 });
 
 app.use("/", routes);
 
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 
 // Define a route to get the image
-app.get('/api/v1/image/:imageName', (req, res) => {
+app.get("/api/v1/image/:imageName", (req, res) => {
   const imageName = req.params.imageName;
   res.sendFile(`${__dirname}/uploads/${imageName}`);
 });
 // Test Route
-app.get('/', asyncErrorHandler(async(req, res, next) => {
-      const htmlContent = `
+app.get(
+  "/",
+  asyncErrorHandler(async (req, res, next) => {
+    const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
           <head>
@@ -80,9 +74,8 @@ app.get('/', asyncErrorHandler(async(req, res, next) => {
           </body>
         </html>
       `;
-      res.send(htmlContent);
-})
+    res.send(htmlContent);
+  })
 );
 // error handler
 app.use(errorMiddleware);
-
